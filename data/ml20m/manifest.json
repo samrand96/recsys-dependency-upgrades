@@ -1,0 +1,97 @@
+{
+  "format_version": 1,
+  "source": {
+    "url": "https://files.grouplens.org/datasets/movielens/ml-20m.zip",
+    "sha256": "96f243c338a8665f6bcc89c53edf6ee39162a846940de6b7c8c48aeada765ff3",
+    "publisher_md5": "cd245b17a1ae2cc31bb14903e1204af3"
+  },
+  "duplicate_user_item_interactions_removed": 0,
+  "global_split_warm_relevant_test_user_ceiling_without_validation_gap": 5518,
+  "target_minimum_warm_relevant_test_users": 1500,
+  "split_attempts": [
+    {
+      "target_percentages": [
+        80,
+        10,
+        10
+      ],
+      "validation_start_unix": 1256024023,
+      "test_start_unix": 1333154954,
+      "interactions_at_validation_start": 1,
+      "interactions_at_test_start": 1,
+      "warm_relevant_test_users": 2834
+    }
+  ],
+  "selected_split": {
+    "target_percentages": [
+      80,
+      10,
+      10
+    ],
+    "validation_start_unix": 1256024023,
+    "test_start_unix": 1333154954,
+    "interactions_at_validation_start": 1,
+    "interactions_at_test_start": 1,
+    "warm_relevant_test_users": 2834
+  },
+  "splits": {
+    "train": {
+      "interactions": 16000210,
+      "warm_interactions": 16000210,
+      "warm_users": 112466,
+      "cold_user_interactions": 0,
+      "cold_item_interactions": 0,
+      "cold_users": 0,
+      "cold_items": 0,
+      "excluded_relevant_interactions": 0,
+      "warm_relevant_users": 112324
+    },
+    "validation": {
+      "interactions": 2000026,
+      "warm_interactions": 339159,
+      "warm_users": 5042,
+      "cold_user_interactions": 1545993,
+      "cold_item_interactions": 218114,
+      "cold_users": 12575,
+      "cold_items": 5563,
+      "excluded_relevant_interactions": 823723,
+      "warm_relevant_users": 4894
+    },
+    "test": {
+      "interactions": 2000027,
+      "warm_interactions": 151685,
+      "warm_users": 2949,
+      "cold_user_interactions": 1715007,
+      "cold_item_interactions": 425677,
+      "cold_users": 15384,
+      "cold_items": 13211,
+      "excluded_relevant_interactions": 960860,
+      "warm_relevant_users": 2834
+    }
+  },
+  "training_users": 112466,
+  "training_items": 12388,
+  "activity_count_cutoffs_inclusive": [
+    44,
+    114
+  ],
+  "test_users_by_activity": {
+    "low": 138,
+    "medium": 200,
+    "high": 1662
+  },
+  "rating_rule": "integer part of the half-star rating; relevance is rating >= 4",
+  "evaluation_sample": {
+    "rng": "PCG64",
+    "seed": 713,
+    "size": 2000,
+    "warm_relevant_test_users_before_sampling": 2834,
+    "warm_relevant_validation_users_before_sampling": 4894,
+    "test_rows_kept": 105544,
+    "validation_rows_kept": 220342
+  },
+  "prepared": {
+    "filename": "ml20m.npz",
+    "sha256": "fdb176212ca46b7ae96638928430038b784f9bc2cfc692ee174a055b1b078c11"
+  }
+}

@@ -1,0 +1,98 @@
+# Held-out single-dependency transitions for the full study (protocol v1).
+# Selected on 2026-11-13 from PyPI release metadata only, before any was built or run.
+# Rule: PROTOCOL_V1.md, "Selection rules for the held-out collections".
+collection: systematic_single
+python: "3.12"
+selection_rule: >-
+  Held-out set chosen on 2026-11-13 from PyPI release metadata only: consecutive
+  minor releases (latest in-window patch) of NumPy, SciPy, pandas and PyTorch on
+  Python 3.12 with the newer side uploaded between 2024-01-01 and 2026-10-31,
+  excluding the pilot development transitions.
+transitions:
+  - id: N4
+    family: numpy
+    split: heldout
+    status: planned
+    change: {package: numpy, old: "2.2.6", new: "2.3.5"}
+    held_fixed: {scipy: "1.16.3", pandas: "2.2.3"}
+  - id: N5
+    family: numpy
+    split: heldout
+    status: planned
+    change: {package: numpy, old: "2.3.5", new: "2.4.6"}
+    held_fixed: {scipy: "1.16.3", pandas: "2.2.3"}
+  - id: N6
+    family: numpy
+    split: heldout
+    status: planned
+    change: {package: numpy, old: "2.4.6", new: "2.5.4"}
+    held_fixed: {scipy: "1.16.3", pandas: "2.2.3"}
+  - id: S5
+    family: scipy
+    split: heldout
+    status: planned
+    change: {package: scipy, old: "1.15.3", new: "1.16.3"}
+    held_fixed: {numpy: "2.2.6", pandas: "2.2.3"}
+  - id: S6
+    family: scipy
+    split: heldout
+    status: planned
+    change: {package: scipy, old: "1.16.3", new: "1.17.1"}
+    held_fixed: {numpy: "2.2.6", pandas: "2.2.3"}
+  - id: S7
+    family: scipy
+    split: heldout
+    status: planned
+    change: {package: scipy, old: "1.17.1", new: "1.18.1"}
+    held_fixed: {numpy: "2.2.6", pandas: "2.2.3"}
+  - id: D0
+    family: pandas
+    split: heldout
+    status: planned
+    change: {package: pandas, old: "2.1.4", new: "2.2.3"}
+    held_fixed: {numpy: "1.26.4", scipy: "1.13.1"}
+    note: pandas 2.2.0 was uploaded in January 2024, so 2.1 -> 2.2 enters the window. pandas 2.1.4 requires numpy<2.
+  - id: D3
+    family: pandas
+    split: heldout
+    status: planned
+    change: {package: pandas, old: "3.0.6", new: "3.1.0"}
+    held_fixed: {numpy: "2.0.2", scipy: "1.13.1"}
+    note: pandas 3.1.1 was uploaded on 2026-11-04, outside the window, so 3.1.0 is the in-window patch.
+  - id: T1
+    family: torch
+    split: heldout
+    status: planned
+    change: {package: torch, old: "2.9.1", new: "2.10.0"}
+    held_fixed: {}
+    note: PyTorch transitions are screened and run in Phase 3 on rented compute.
+  - id: T2
+    family: torch
+    split: heldout
+    status: planned
+    change: {package: torch, old: "2.10.0", new: "2.11.0"}
+    held_fixed: {}
+  - id: T3
+    family: torch
+    split: heldout
+    status: planned
+    change: {package: torch, old: "2.11.0", new: "2.12.1"}
+    held_fixed: {}
+  - id: T4
+    family: torch
+    split: heldout
+    status: planned
+    change: {package: torch, old: "2.12.1", new: "2.13.0"}
+    held_fixed: {}
+  - id: T5
+    family: torch
+    split: heldout
+    status: planned
+    change: {package: torch, old: "2.13.0", new: "2.14.1"}
+    held_fixed: {}
+  - id: T6
+    family: torch
+    split: heldout
+    status: planned
+    change: {package: torch, old: "2.14.1", new: "2.15.0"}
+    held_fixed: {}

@@ -1,0 +1,65 @@
+# Pilot (development) transitions: one direct dependency moves, the rest is held by the lock.
+# Source: PLAN.md section 7.3, fixed on 2026-11-12 before any ranking result existed.
+# Wildcard patches were fixed from PyPI metadata before ranking runs.
+# These are development cases: never report them as held-out.
+collection: systematic_single
+python: "3.12"
+selection_rule: >-
+  Pilot development set chosen on 2026-11-12 from PyPI release metadata only
+  (consecutive minor releases of NumPy, SciPy and pandas reachable on Python 3.12),
+  before any recommender was run.
+transitions:
+  - id: N1
+    family: numpy
+    split: dev
+    status: planned
+    change: {package: numpy, old: "1.26.4", new: "2.0.2"}
+    held_fixed: {scipy: "1.13.1", pandas: "2.2.3"}
+  - id: N2
+    family: numpy
+    split: dev
+    status: planned
+    change: {package: numpy, old: "2.0.2", new: "2.1.3"}
+    held_fixed: {scipy: "1.13.1", pandas: "2.2.3"}
+  - id: N3
+    family: numpy
+    split: dev
+    status: planned
+    change: {package: numpy, old: "2.1.3", new: "2.2.6"}
+    held_fixed: {scipy: "1.13.1", pandas: "2.2.3"}
+  - id: S1
+    family: scipy
+    split: dev
+    status: planned
+    change: {package: scipy, old: "1.11.4", new: "1.12.0"}
+    held_fixed: {numpy: "1.26.4", pandas: "2.2.3"}
+  - id: S2
+    family: scipy
+    split: dev
+    status: planned
+    change: {package: scipy, old: "1.12.0", new: "1.13.1"}
+    held_fixed: {numpy: "1.26.4", pandas: "2.2.3"}
+  - id: S3
+    family: scipy
+    split: dev
+    status: planned
+    change: {package: scipy, old: "1.13.1", new: "1.14.1"}
+    held_fixed: {numpy: "2.0.2", pandas: "2.2.3"}
+  - id: S4
+    family: scipy
+    split: dev
+    status: planned
+    change: {package: scipy, old: "1.14.1", new: "1.15.3"}
+    held_fixed: {numpy: "2.0.2", pandas: "2.2.3"}
+  - id: D1
+    family: pandas
+    split: dev
+    status: planned
+    change: {package: pandas, old: "2.2.3", new: "2.3.3"}
+    held_fixed: {numpy: "2.0.2", scipy: "1.13.1"}
+  - id: D2
+    family: pandas
+    split: dev
+    status: planned
+    change: {package: pandas, old: "2.3.3", new: "3.0.6"}
+    held_fixed: {numpy: "2.0.2", scipy: "1.13.1"}

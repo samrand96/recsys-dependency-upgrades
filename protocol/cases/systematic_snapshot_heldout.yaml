@@ -1,0 +1,119 @@
+# Held-out bundle-level transitions: consecutive quarterly snapshots (protocol v1).
+# Selected on 2026-11-13 by rule, before any snapshot was resolved.
+collection: systematic_snapshot
+python: "3.12"
+selection_rule: >-
+  Held-out set fixed on 2026-11-13: the unpinned requirements numpy, scipy, pandas
+  and implicit resolved with an upload cutoff at 00:00 UTC on the first day of each
+  quarter from 2024-01-01 to 2026-10-01; each consecutive pair is one transition.
+transitions:
+  - id: Q1
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2024-01-01"
+      new_as_of: "2024-04-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q2
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2024-04-01"
+      new_as_of: "2024-07-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q3
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2024-07-01"
+      new_as_of: "2024-10-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q4
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2024-10-01"
+      new_as_of: "2025-01-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q5
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2025-01-01"
+      new_as_of: "2025-04-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q6
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2025-04-01"
+      new_as_of: "2025-07-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q7
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2025-07-01"
+      new_as_of: "2025-10-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q8
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2025-10-01"
+      new_as_of: "2026-01-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q9
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2026-01-01"
+      new_as_of: "2026-04-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q10
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2026-04-01"
+      new_as_of: "2026-07-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}
+  - id: Q11
+    family: snapshot
+    split: heldout
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2026-07-01"
+      new_as_of: "2026-10-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}

@@ -1,0 +1,20 @@
+# Bundle-level transitions: the same unpinned requirements resolved "as of" two dates.
+# The treatment is the whole resolved environment change, never a single package.
+# Source: PLAN.md section 7.3 (B1). Each dated pyproject uses `exclude-newer` at
+# 00:00:00 UTC, supported by uv 0.9.30 in the pinned runner.
+collection: systematic_snapshot
+python: "3.12"
+selection_rule: >-
+  Pilot development case chosen on 2026-11-12: what an unpinned project would have
+  installed in mid-2024 versus November 2026.
+transitions:
+  - id: B1
+    family: snapshot
+    split: dev
+    status: planned
+    change:
+      kind: snapshot
+      old_as_of: "2024-06-01"
+      new_as_of: "2026-11-01"
+      requirements: [numpy, scipy, pandas, implicit]
+    held_fixed: {}

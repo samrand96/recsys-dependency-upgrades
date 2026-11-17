@@ -1,0 +1,14 @@
+[project]
+name = "env-py312-snapshot-2025-10-01"
+version = "0"
+requires-python = "==3.12.*"
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "implicit",
+]
+
+[tool.uv]
+package = false
+exclude-newer = "2025-10-01T00:00:00Z"

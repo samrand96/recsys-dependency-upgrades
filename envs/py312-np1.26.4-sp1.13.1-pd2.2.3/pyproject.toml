@@ -1,0 +1,15 @@
+# Environment under test: old side of transition N1 (NumPy 1.26.4 -> 2.0.2).
+# The lockfile next to this file is created inside the runner container and committed.
+[project]
+name = "env-py312-np1-26-4-sp1-13-1-pd2-2-3"
+version = "0"
+requires-python = "==3.12.*"
+dependencies = [
+    "numpy==1.26.4",
+    "scipy==1.13.1",
+    "pandas==2.2.3",
+    "threadpoolctl",
+]
+
+[tool.uv]
+package = false

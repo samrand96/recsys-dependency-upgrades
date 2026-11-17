@@ -1,0 +1,8 @@
+M1 & NumPy 2.0 unstable selection reorders exact ties & 6 & 3 & S3, S7 & 0.4\% lists; $|L|\le0$ \\
+M2 & OpenBLAS core selection (ALS) & 3 & 2 & S3 & 8.5\% lists; $|L|\le3.4\times10^{-5}$ \\
+M3 & OpenBLAS 0.3.31 bundled with NumPy 2.4.6 (EASE inverse) & 2 & 0 & S3 & no top-10 change; $|L|\le0$ \\
+M4 & NumPy 2.0 \texttt{log1p} last-bit change (BM25 weights) & 3 & 1 & S3 & no top-10 change; $|L|\le0$ \\
+M5 & PyTorch 2.10 CUDA training (BPR) & 0 & 1 & S3 & no top-10 change; $|L|\le0$ \\
+M6 & Removed \texttt{np.NaN} alias (Recommenders SAR) & 12 & 0 & -- & visible failure \\
+M7 & Missing \texttt{np.in1d} (implicit 0.7.2, NumPy 2.4.4) & 4 & 0 & -- & visible failure \\
+M8 & Recommenders requires \texttt{pandas<3} & 0 & 0 & -- & 2 SAR cells excluded \\

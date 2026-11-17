@@ -1,0 +1,28 @@
+# Runner image: every environment under test is built and run inside this image.
+# The base is pinned by digest so the OS, glibc and CPython build never drift.
+# Verified 2026-11-12: Python 3.12.12, uv 0.9.30, linux/amd64.
+# Changing this digest changes every environment: bump it only with a protocol version bump.
+FROM ghcr.io/astral-sh/uv@sha256:e5b65587bce7de595f299855d7385fe7fca39b8a74baa261ba1b7147afa78e58 AS runner
+
+# Use the image's CPython only; never let uv download another interpreter.
+ENV UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Determinism controls for the primary condition (one thread).
+# A "default threads" condition overrides these per run and is labelled as such.
+ENV PYTHONHASHSEED=0 \
+    OMP_NUM_THREADS=1 \
+    OPENBLAS_NUM_THREADS=1 \
+    MKL_NUM_THREADS=1 \
+    NUMEXPR_NUM_THREADS=1
+
+WORKDIR /repo
+
+# Use this target for implicit cases. The historical release needs a compiler,
+# and the newer wheels require the OpenMP runtime supplied by g++'s dependencies.
+FROM runner AS source-runner
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends g++ \
+    && rm -rf /var/lib/apt/lists/*

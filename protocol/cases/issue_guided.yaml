@@ -1,0 +1,967 @@
+collection: issue_guided
+selection_rule: >-
+  Development leads from upstream issue reports, fixes, dependency constraints,
+  and release notes. Lead status means source triage is recorded and the pilot
+  has yet to reproduce the symptom. These leads are enriched for faults and are
+  excluded from systematic prevalence. They are used only to study mechanisms.
+  A cross-reference to an existing systematic case identifies shared evidence.
+field_guide:
+  visibility: >-
+    What the cited source documents: crash (exception, import or build failure,
+    failing test), warning (a warning is emitted), silent (execution completed
+    with wrong or changed values and no failure signal), unknown (the source
+    shows no observed symptom, for example a release note or a pin without a
+    reported symptom). A release note alone never gives "silent".
+  evidence_quality: >-
+    maintainer_confirmed (a project maintainer or collaborator confirmed or
+    fixed the symptom), user_report (reported or proposed by a user or outside
+    contributor, not yet confirmed), release_note_only (documented upstream
+    change or dependency pin with no reported downstream symptom).
+  mechanism_guess: >-
+    Our hypothesis about the cause. It is not established unless the notes
+    quote a source that establishes it.
+  upgrade_link: >-
+    Where the notes say the dependency-upgrade link is our hypothesis, the
+    source does not attribute the symptom to an upgrade.
+search_scope:
+  checked_on: "2026-11-13"
+  repositories:
+    - recommenders-team/recommenders
+    - benfred/implicit
+    - RUCAIBox/RecBole
+    - lenskit/lkpy
+    - PreferredAI/cornac
+    - NicolasHug/Surprise
+    - MTSWebServices/RecTools  # formerly MobileTeleSystems/RecTools; the old name no longer resolves in search
+    - LienM/recpack
+  methods:
+    - >-
+      gh search issues --include-prs, read-only, per repository, with the pilot plan's
+      keywords: "numpy 2", "results changed", "different results", "metrics dropped",
+      "after upgrading", scipy, "pandas 3", argsort, argpartition, reproducib.
+    - >-
+      Second round: tie, "float32 precision", nondeterministic, "flaky test",
+      tolerance, "dtype float64", "torch version", "numpy version", "pandas version",
+      numba; plus targeted RecBole queries in English and Chinese.
+    - Full reading (gh issue/pr view, gh pr diff) of every item cited below.
+    - >-
+      Release notes read from tagged sources: pandas doc/source/whatsnew/v3.0.0.rst
+      (tag v3.0.0) and SciPy doc/source/release/1.11.0 to 1.15.0 notes (tag v1.15.0).
+    - >-
+      Follow-up issue and PR queries on implicit, Surprise, RecTools, Cornac,
+      LensKit and the RecPack mirror. Searched project setup notes and dependency
+      files for NumPy <2 and SciPy <=1.13.1 downstream constraints.
+  limitations: >-
+    Search is keyword-based and not exhaustive. The second keyword round hit the
+    GitHub search rate limit: "numba" in recommenders-team/recommenders and all
+    second-round queries for benfred/implicit, RUCAIBox/RecBole, lenskit/lkpy,
+    PreferredAI/cornac, NicolasHug/Surprise and LienM/recpack returned nothing
+    because they were rate limited, not because nothing exists. Rerun on 13 November: 59 of the 61 queries completed (126 unique hits, 123 not previously listed). Titles were triaged, the plausible ones read, and four were added as L17-L20; all are crashes or pins, none silent. Still unrun after two network failures: "flaky test" in benfred/implicit and tolerance in RUCAIBox/RecBole. benfred/implicit issue 607 (title suggests an API difference between model types) could not be loaded.
+    Downstream pin searches found compatibility workarounds. A pin motivated by
+    changed ranking quality remains unverified. Pilot reproductions are recorded
+    on the relevant leads and cross-referenced to ledger case IDs.
+  related_evidence:
+    - url: https://github.com/benfred/implicit/issues/710
+      note: BPR factor differences with multiple threads are a same-version noise lead.
+    - url: https://github.com/MTSWebServices/RecTools/releases/tag/v0.10.0
+      note: Tie ordering can change with the project's CPU-to-GPU ranking default change.
+    - url: https://pypi.org/pypi/recpack/0.3.6/json
+      note: RecPack pins NumPy 1.x and SciPy 1.x. Metadata gives no ranking symptom.
+    - url: https://gitlab.com/recpack-maintainers/recpack/-/commit/d4299773
+      note: RecPack's canonical repository documents pandas and Torch 2.x support for Python 3.11.
+    - url: https://github.com/ogamircs/genrec-demo/blob/45f1cfd9b429c6784ac670779b9e79b450a3642f/README.md
+      note: Downstream SAR/BPR benchmark pins NumPy 1.26.4 because of the Recommenders version constraint in L2b.
+    - url: https://huggingface.co/spaces/khalednabawi11/Book-Recommender-System/blob/main/requirements.txt
+      note: Downstream app pins NumPy below 2 alongside scikit-surprise. The requirements give no reason for the pin.
+    - url: https://github.com/vin1bun/recommendation-system/blob/eeece7f11cf6a10e956acc0d7bfec0471808e61a/README.md
+      note: Downstream project cites NumPy 2.x compatibility when switching from Surprise to SciPy SVD. Exact versions and failure details are absent.
+    - url: https://github.com/RUCAIBox/RecBole/issues/488
+      note: The discussion concerns consistency across RecBole releases and supplies no dependency transition.
+    - url: https://github.com/recommenders-team/recommenders/pull/2396
+      note: >-
+        Not a dependency upgrade. SAR lexicographers mutual information used sparse
+        `*` (matrix product) instead of an element-wise product, producing mostly
+        -inf similarities; the stored reference files (sim_lex*.csv, userpred_lex3.csv)
+        had been generated from the wrong behaviour, so the tests encoded it. Useful
+        as evidence that upstream test oracles can freeze wrong numbers.
+    - url: https://github.com/RUCAIBox/RecBole/issues/1196
+      note: >-
+        Not a dependency upgrade. Metrics differed between RecBole 0.2.1 and 1.0.1
+        because RecBole's own config default changed (eval mode full vs uni100).
+    - url: https://github.com/recommenders-team/recommenders/pull/2337
+      note: >-
+        Not a dependency upgrade. Benchmark MAP/nDCG changed after fixing
+        top_k/remove_seen handling in helper code.
+    - url: https://arxiv.org/abs/2610.09267
+      note: >-
+        From the Lane C hand-over note, not opened here: BBCBench mined Python
+        breaking-change cases with queries such as "compatibility with numpy 2";
+        not yet inspected for recommender projects.
+
+leads:
+  - id: L1
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/issues/1954
+    claimed_symptom: >-
+      Issue 1954: "With scipy 1.10.1, the item similarity matrix is a dense matrix"
+      but with SciPy 1.11.1 SAR's item_similarity printed with shape (). Issue 1951:
+      "Scipy 1.11.0 and 1.11.1 are breaking all our tests". Users then hit a
+      ValueError in recommend_k_items (issue 2015); PR 2083 comments show a later
+      TypeError "'coo_matrix' object is not subscriptable" with SciPy 1.13.
+    versions_old: {scipy: "1.10.1"}
+    versions_new: {scipy: "1.11.0 / 1.11.1 (and 1.13.0 for the follow-up TypeError)"}
+    versions:
+      dependency: scipy
+      old: "1.10.1"
+      new: "1.11.1"
+      first_changed: "1.11.0"
+      application_fix: "recommenders 1.2.0 / 1.2.1 (PR 2083 merged 2024-04-29)"
+    visibility: crash
+    mechanism_guess: >-
+      Confirmed by a SciPy contributor in scipy#18796: SciPy 1.11.0 release note
+      "Division of sparse arrays by a dense array now returns sparse arrays".
+      SAR's similarity functions wrapped the result in np.array(), which turns a
+      sparse object into a 0-d object array. Fix: `.toarray()` when the result
+      is sparse. The 1.13 TypeError comes from sparse min(axis=1) returning COO.
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Source documents a crash, fixed in Recommenders 1.2.1. Not reproduced here: SAR 1.2.1 ran on SciPy 1.11.4, 1.12.0 and 1.13.1 with NumPy 1.26.4 (S1-P4, S2-P4 identical)."
+      evidence:
+      - protocol/pipelines_p3_p4.md
+    evidence:
+      - https://github.com/recommenders-team/recommenders/issues/1951
+      - https://github.com/recommenders-team/recommenders/pull/2083
+      - https://github.com/recommenders-team/recommenders/issues/2015
+      - https://github.com/scipy/scipy/issues/18796
+      - https://docs.scipy.org/doc/scipy-1.11.0/release/1.11.0-notes.html#scipy-sparse-improvements
+      - https://github.com/recommenders-team/recommenders/releases/tag/1.2.1
+    notes: >-
+      Answer to pilot lead L1: a crash, not silently wrong numbers. Every
+      documented symptom is a failing CI test or an exception; no source reports
+      that SAR ran and returned different rankings. PR 2083 also removed the
+      scipy<1.11 cap. A maintainer comment in PR 2083 notes CI passed on Python 3.8
+      (SciPy 1.10) with np.array(result) and on 3.9+ (SciPy 1.11+) with
+      result.toarray(), so the fix is version-conditional. This transition starts
+      before S1; check Python and wheel compatibility separately.
+
+  - id: L1b
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/issues/2126
+    claimed_symptom: >-
+      Cornac BiVAE notebook test fails with AttributeError "'csc_matrix' object has
+      no attribute 'A'" during fit. Cornac issue 629 reports the same for
+      ItemKNN/UserKNN recommend() with NumPy 1.26 and SciPy 1.14.
+    versions_old: {scipy: "1.13.1"}
+    versions_new: {scipy: "1.14.0"}
+    versions:
+      dependency: scipy
+      old: "1.13.1"
+      new: "1.14.0"
+      application_report: "cornac 2.2.1 discussed by maintainers"
+    visibility: crash
+    mechanism_guess: >-
+      SciPy 1.14.0 expired deprecation: the `.A` and `.H` attributes were removed
+      (release notes, deprecated since 1.11.0). Cornac PR 631 replaced `.A`.
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Source documents a crash in Cornac BiVAE under newer SciPy. Not exercised: BiVAE is not among the study's pipelines."
+    evidence:
+      - https://github.com/recommenders-team/recommenders/pull/2127
+      - https://github.com/PreferredAI/cornac/issues/629
+      - https://github.com/PreferredAI/cornac/pull/631
+      - https://docs.scipy.org/doc/scipy/release/1.14.0-notes.html#expired-deprecations
+    notes: >-
+      Recommenders PR 2127 (the "scipy <= 1.13.1" pin in pilot lead L1) exists for
+      this Cornac crash, not for SAR. Verify the installed Cornac version and the
+      BiVAE-specific repair before replay.
+
+  - id: L2
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/issues/2112
+    claimed_symptom: >-
+      LibFFMConverter.fit() raises AttributeError "module 'numpy' has no attribute
+      'float'" with NumPy 1.26 (problem since 1.24).
+    versions_old: {numpy: "<1.24"}
+    versions_new: {numpy: ">=1.24 (reported on 1.26)"}
+    versions:
+      dependency: numpy
+      first_changed: "1.24.0"
+      reported: "1.26.x"
+      application_fix: "recommenders 1.2.1"
+    visibility: crash
+    mechanism_guess: Expired NumPy aliases np.float / np.int (deprecated 1.20, removed 1.24).
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Source documents a crash (removed np.float) in LibFFMConverter. Not exercised by the study's pipelines."
+    evidence:
+      - https://github.com/recommenders-team/recommenders/pull/2113
+      - https://numpy.org/doc/1.24/release/1.24.0-notes.html#expired-deprecations
+      - https://github.com/recommenders-team/recommenders/releases/tag/1.2.1
+    notes: >-
+      Half of the pilot plan's "Fix issues with numpy (#2113 #2120)" note. PR 2113 was
+      merged by maintainers. Not a NumPy 2 case and not silent.
+
+  - id: L2b
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/pull/2120
+    claimed_symptom: >-
+      PR body: "Numpy has recently been updated to 2.0.0, with multiple breaking
+      changes. Until the library usage is migrated, I pinned down the version to <2."
+      No specific symptom is named.
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: "2.0.0"}
+    versions:
+      dependency: numpy
+      restricted: "<2"
+      first_excluded: "2.0.0"
+      application: "recommenders 1.2.1"
+    visibility: unknown
+    mechanism_guess: Precautionary major-version pin; no mechanism stated.
+    evidence_quality: release_note_only
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "The pin gave no symptom, but this study observed the breakage it guards against: Recommenders 1.2.1 SAR crashes on every NumPy 2 environment (np.NaN), adjudicated in the ledger."
+      evidence: []
+    evidence:
+      - https://github.com/recommenders-team/recommenders/issues/2224
+      - https://github.com/recommenders-team/recommenders/pull/2225
+      - https://github.com/recommenders-team/recommenders/releases/tag/1.2.1
+    notes: >-
+      A pin without a reported symptom. Later NumPy 2 reports in Recommenders are
+      crashes (L9 Surprise import, L14 LightGCN np.mat, L15 TF-IDF TypeError).
+
+  - id: L3
+    project: numpy/numpy
+    url: https://numpy.org/doc/2.0/release/2.0.0-notes.html#minor-changes-in-behavior-of-sorting-functions
+    claimed_symptom: >-
+      NumPy 2.0 release notes: sorting functions with methods that are not stable
+      may return slightly different results compared to 1.26.x, including the
+      default method of argsort and argpartition.
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: "2.0.0"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.0.0"}
+    visibility: unknown
+    mechanism_guess: >-
+      Unstable top-K selection reorders exactly tied scores, changing order or
+      membership at the cut-off.
+    evidence_quality: release_note_only
+    status: reproduced
+    closure:
+      decided: '2026-11-14'
+      reason: "Reproduced as a silent behavioural change: NumPy 2.0 unstable partition reorders tied scores (N1, Q2, B1 reference item-kNN; same inference effect on two CPU hosts). No quality loss at any tolerance."
+      evidence:
+      - protocol/reproducers/numpy_unstable_topk.py
+    notes: >-
+      L11 records a downstream contract violation involving tie order. Its
+      dependency-upgrade link remains a separate hypothesis.
+    pilot_reproduction:
+      ledger_case_id: N1-P1-float32
+      ledger_comparison_id: 6c11ab8010afae53cc0eb208
+      versions: {dependency: numpy, old: "1.26.4", new: "2.0.2"}
+      mode: inference
+      stage: S7
+      outcome: behavioral_change
+      result: >-
+        Same-host replay with frozen scores, masks and IDs reproduced native
+        top-K changes limited to exact ties. NumPy rollback restored the old
+        ranking and reapplying the upgrade restored the change. Canonical
+        lists matched. Mean primary NDCG@10 loss was 0.0, with a 95% interval
+        of [0.0, 0.0]. The case met all three pilot equivalence bounds.
+      synthetic_reproducer: protocol/reproducers/numpy_unstable_topk.py
+
+  - id: L4
+    project: numpy/numpy
+    url: https://numpy.org/doc/2.0/numpy_2_0_migration_guide.html#changes-to-numpy-data-type-promotion
+    claimed_symptom: >-
+      NumPy 2.0 preserves NumPy scalar precision in promotion (NEP 50): a float32
+      array plus a NumPy float64 scalar now returns float64; a NumPy float32 scalar
+      plus a Python float now returns float32.
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: "2.0.0"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.0.0"}
+    visibility: unknown
+    mechanism_guess: >-
+      Mixed-dtype arithmetic in normalisation or regularisation changes precision,
+      which can break or create near-ties.
+    evidence_quality: release_note_only
+    status: not_reproducible
+    closure:
+      decided: '2026-11-14'
+      reason: "No pipeline change in this study was attributable to NEP 50. Tested directly for implicit BM25: restoring legacy promotion under NumPy 2.0.2 did not change the result (the cause was log1p)."
+      evidence:
+      - protocol/reproducers/README.md
+    evidence:
+      - https://numpy.org/neps/nep-0050-scalar-promotion.html
+    notes: A ranker effect requires an actual mixed-dtype operation on its executed path.
+
+  - id: L5
+    project: pandas-dev/pandas
+    url: https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#other-removals
+    claimed_symptom: >-
+      pandas 3.0 release notes (removals): "Changed the default value of observed
+      in DataFrame.groupby and Series.groupby to True".
+    versions_old: {pandas: "2.3.x"}
+    versions_new: {pandas: "3.0.0"}
+    versions: {dependency: pandas, old: "2.3.x", new: "3.0.0"}
+    visibility: unknown
+    mechanism_guess: >-
+      Grouping on categorical keys now omits categories absent from the data;
+      a catalog or id mapping built from groups can shrink silently.
+    evidence_quality: release_note_only
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "Not exercised: the study's preprocessing (P0) never groups categorical columns. P0 under pandas 2.3 to 3.0 (D2, Q9) and 3.0 to 3.1 (D3) produced identical checkpoints."
+      evidence: []
+    evidence:
+      - https://github.com/pandas-dev/pandas/issues/51811
+      - https://github.com/lenskit/lkpy/issues/988
+    notes: >-
+      Applies only where preprocessing groups on categorical columns. LensKit's
+      pandas 3 port (PR 993) needed only string-type fixes; no recommender
+      project reported an observed-default symptom.
+
+  - id: L5b
+    project: pandas-dev/pandas
+    url: https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#consistent-copy-view-behaviour-with-copy-on-write
+    claimed_symptom: >-
+      pandas 3.0: every indexing result behaves as a copy, so chained assignment
+      "will stop working"; SettingWithCopyWarning is removed.
+    versions_old: {pandas: "2.3.x"}
+    versions_new: {pandas: "3.0.0"}
+    versions: {dependency: pandas, old: "2.3.x", new: "3.0.0"}
+    visibility: warning
+    mechanism_guess: >-
+      Code that relied on chained assignment updating the parent leaves fields
+      unchanged (for example a rating rescale or filter flag not applied).
+    evidence_quality: release_note_only
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "Not exercised: P0 performs no chained assignment. No pandas warnings were logged in the pandas 3 P0 runs."
+      evidence: []
+    evidence:
+      - https://pandas.pydata.org/pandas-docs/version/2.3/user_guide/copy_on_write.html#chained-assignment
+    notes: >-
+      Visibility "warning" refers to pandas' chained-assignment warning described
+      in the copy-on-write guide; not confirmed in our runs. pandas 2.3 is
+      recommended as a step to surface deprecation warnings. Check whether any
+      pipeline code uses chained assignment at all.
+
+  - id: L5c
+    project: pandas-dev/pandas
+    url: https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#dedicated-string-data-type-by-default
+    claimed_symptom: >-
+      pandas 3.0 infers a dedicated `str` dtype for string data instead of object.
+    versions_old: {pandas: "2.3.x"}
+    versions_new: {pandas: "3.0.0"}
+    versions: {dependency: pandas, old: "2.3.x", new: "3.0.0"}
+    visibility: unknown
+    mechanism_guess: >-
+      Code that branches on object dtype, or factorises string ids, takes another
+      path or produces a different id order.
+    evidence_quality: release_note_only
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "Not exercised: P0 reads integer IDs only, so the pandas 3 string dtype never applies."
+      evidence: []
+    evidence:
+      - https://github.com/lenskit/lkpy/pull/993
+    notes: >-
+      LensKit PR 993 needed large-string (LargeUtf8) support in IDIndex for pandas 3;
+      described as making things work, no ranking effect reported.
+
+  - id: L5d
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/pull/2296
+    claimed_symptom: >-
+      Compatibility shim for groupby.apply(include_groups=False) in
+      negative_feedback_sampler. A maintainer's review says behaviour on pandas <2.2
+      "isn't equivalent": without include_groups=False the user column is passed
+      into the applied function, so output could carry an extra column.
+    versions_old: {pandas: "<2.2"}
+    versions_new: {pandas: ">=2.2 (3.0 removed include_groups=True)"}
+    versions: {dependency: pandas, old: "2.x", new: "3.0.0"}
+    visibility: unknown
+    mechanism_guess: >-
+      pandas 3.0 removed include_groups=True for DataFrameGroupBy.apply, so applied
+      functions no longer see grouping columns; version-conditional shims can give
+      different frames on different pandas versions.
+    evidence_quality: maintainer_confirmed
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "Not exercised: the Recommenders negative-feedback sampler is not part of the study's pipelines."
+    evidence:
+      - https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#other-removals
+    notes: >-
+      What the maintainer confirmed is a column-set difference in the sampler's
+      output across pandas versions, not a ranking or metric change. Weak lead;
+      check whether the extra column changes sampled negatives.
+
+  - id: L5e
+    project: pandas-dev/pandas
+    url: https://pandas.pydata.org/docs/whatsnew/v3.0.0.html#datetime-timedelta-resolution-inference
+    claimed_symptom: >-
+      pandas 3.0 infers datetime resolution: parsed strings default to microseconds,
+      not nanoseconds. The release notes warn that converting to integers "will give
+      integers 1000x smaller".
+    versions_old: {pandas: "2.3.x"}
+    versions_new: {pandas: "3.0.0"}
+    versions: {dependency: pandas, old: "2.3.x", new: "3.0.0"}
+    visibility: unknown
+    mechanism_guess: >-
+      Time-aware steps (temporal splits, SAR time decay, recency features) that cast
+      datetimes to int64 get timestamps in a different unit, changing decay weights
+      or split boundaries without an error.
+    evidence_quality: release_note_only
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "Not exercised: P0 keeps integer Unix timestamps and parses no datetime strings."
+      evidence: []
+    notes: >-
+      Our candidate, not reported by any of the eight projects. Applicable only if a
+      pipeline parses timestamps as datetimes and then casts to integers. RecBole
+      issue 1653 (open) shows timestamps changing value during loading, unrelated
+      to a pandas version, as a reminder that this field is fragile.
+
+  - id: L6
+    project: RUCAIBox/RecBole
+    url: https://github.com/RUCAIBox/RecBole/blob/9a6f63d8d4a5b989fe27955a833f813a6d86041e/recbole/config/configurator.py
+    claimed_symptom: >-
+      Tagged RecBole code assigns `np.float` from `np.float_`, which NumPy 2.0 removed.
+      PR 2203 ("Fix numpy 2 compat") closed unmerged; PR 2187 (open) lists further
+      NumPy 2, SciPy and PyTorch 2.6 fixes.
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: "2.0.0"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.0.0", application: "recbole 1.2.1"}
+    visibility: crash
+    mechanism_guess: Removed NumPy aliases; expected AttributeError at import or config time.
+    evidence_quality: release_note_only
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Crash expected from code inspection (removed np.float_). Not exercised: RecBole is not run, because it does not run on NumPy 2."
+      evidence:
+      - protocol/pipelines_p7_torch.md
+    evidence:
+      - https://numpy.org/doc/2.0/numpy_2_0_migration_guide.html#main-namespace
+      - https://github.com/RUCAIBox/RecBole/pull/2203
+      - https://github.com/RUCAIBox/RecBole/pull/2187
+    notes: >-
+      Crash is expected from code inspection; no issue reports this exact line.
+      Evidence quality is set to release_note_only because no report exists. Any
+      ranking effect after a local alias repair (the pilot plan's "quick fix side effects")
+      is unverified; PR 2187 replaces aliases with explicit dtypes, which could
+      change precision if a float32 alias is chosen.
+
+  - id: L6b
+    project: RUCAIBox/RecBole
+    url: https://github.com/RUCAIBox/RecBole/issues/2215
+    claimed_symptom: >-
+      RecBole BPR quick start raised AttributeError "module 'numpy' has no attribute
+      'bool8'" in Ray's TensorBoard logger; after downgrading NumPy, evaluation failed
+      with "Weights only load failed" under PyTorch 2.12.
+    versions_old: {numpy: "1.26.4", torch: "2.5.1"}
+    versions_new: {numpy: "2.4.6", torch: "2.12.0"}
+    versions:
+      dependency: numpy
+      old_reported_workaround: "1.26.4"
+      new_reported: "2.4.6"
+      application: "recbole 1.2.1 with ray 2.6.3"
+    visibility: crash
+    mechanism_guess: >-
+      Transitive dependency (Ray 2.6.3) uses a removed NumPy alias; separately the
+      PyTorch 2.6 torch.load weights_only default change breaks checkpoint loading.
+    evidence_quality: user_report
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "User-reported crash (removed np.bool8). Not exercised: RecBole is not run."
+      evidence:
+      - protocol/pipelines_p7_torch.md
+    evidence:
+      - https://github.com/RUCAIBox/RecBole/issues/2212
+    notes: >-
+      Reporter used Python 3.11 on Windows. Issue is open with no maintainer reply.
+      Two independent crash mechanisms in one report.
+
+  - id: L6c
+    project: RUCAIBox/RecBole
+    url: https://github.com/RUCAIBox/RecBole/issues/2090
+    claimed_symptom: >-
+      LightGCN raises AttributeError "'dok_matrix' object has no attribute '_update'"
+      when building the normalised adjacency matrix (also issue 2185 for RecBole 1.2.0).
+    versions_old: {scipy: "not stated (version before the DOK rewrite)"}
+    versions_new: {scipy: "not stated"}
+    versions: {dependency: scipy, old: unknown, new: unknown, application: "recbole 1.2.0 / 1.2.1"}
+    visibility: crash
+    mechanism_guess: >-
+      RecBole calls the private dok_matrix._update. SciPy 1.12.0 release notes say
+      the DOK implementation was reworked ("performance of dok_matrix and dok_array
+      has been improved, and their inheritance behavior should be more robust");
+      that this removed _update is our guess.
+    evidence_quality: user_report
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "User-reported crash in RecBole graph models with newer SciPy. Not exercised: RecBole is not run."
+    evidence:
+      - https://github.com/RUCAIBox/RecBole/issues/2185
+      - https://github.com/RUCAIBox/RecBole/pull/2187
+    notes: >-
+      Also affects NGCF, NCL, GCMC, SpectralCF, KGIN and MCCLK per PR 2187.
+      Relevant to the "quick fix side effects" idea: users proposed workarounds
+      (loop assignment; `A._dict = data_dict` on a private attribute). Whether those
+      workarounds build the same adjacency matrix on newer SciPy is unverified and
+      would be a candidate silent effect. Confirm the first SciPy version without
+      _update before using this.
+
+  - id: L7
+    project: MTSWebServices/RecTools
+    url: https://github.com/scipy/scipy/issues/20670
+    claimed_symptom: >-
+      SciPy issue 20670: in 1.13.0, CSR/CSC construction from (data, (i, j)) no
+      longer sums duplicate entries; "No error message, just different sparse
+      matrices at creation". A SciPy contributor confirmed it as a bug from PR 19962,
+      fixed for 1.13.1. RecTools cites the issue in a scipy<1.13 constraint.
+    versions_old: {scipy: "1.12.x"}
+    versions_new: {scipy: "1.13.0"}
+    versions:
+      dependency: scipy
+      old: "1.12.x"
+      new: "1.13.0"
+      dependency_fix: "1.13.1"
+      downstream_pin: "rectools 0.19.0 on Python <3.10"
+    visibility: silent
+    mechanism_guess: >-
+      Duplicate user-item coordinates stay as separate stored entries. Matrix
+      products still sum them, but element-wise operations on stored values do not:
+      implicit's cosine normaliser squares stored values before summing, so two
+      entries of 1 give a different norm from one entry of 2.
+    evidence_quality: maintainer_confirmed
+    status: reproduced
+    closure:
+      decided: '2026-11-14'
+      reason: "Reproduced on synthetic component inputs in the pilot: SciPy 1.13.0 keeps duplicate entries, changing implicit's normaliser output (norm 1.291 instead of 1.0); 1.13.1 and rollback to 1.12.0 restore it. Cannot reach the study's rankings: MovieLens 1M has zero duplicate user-item pairs."
+      evidence:
+      - protocol/reproducers/scipy_sparse_duplicates.py
+    evidence:
+      - https://github.com/MTSWebServices/RecTools/blob/c3f81950c359685e938c22c330de5731a44ccbb3/pyproject.toml
+      - https://github.com/MTSWebServices/RecTools/blob/c3f81950c359685e938c22c330de5731a44ccbb3/rectools/dataset/interactions.py
+      - https://github.com/MTSWebServices/RecTools/blob/c3f81950c359685e938c22c330de5731a44ccbb3/rectools/models/implicit_knn.py
+      - https://github.com/benfred/implicit/blob/v0.7.3/implicit/nearest_neighbours.py
+      - https://github.com/scipy/scipy/pull/20687
+      - https://docs.scipy.org/doc/scipy/release/1.13.1-notes.html
+    notes: >-
+      "Silent" describes the documented SciPy symptom; no source reports a changed
+      recommender ranking or metric. The mechanism needs repeated user-item
+      interactions in the input reaching the normalizer as duplicate sparse entries.
+      S2 uses the repaired 1.13.1. RecTools 0.19.0 on Python 3.12 requires
+      SciPy >=1.14.1, so a replay with RecTools there is a forced override.
+    local_check:
+      outcome: upstream_and_downstream_component_effect_reproduced
+      dependency_effect_observed: true
+      versions:
+        scipy_old: "1.12.0"
+        scipy_new: "1.13.0"
+        scipy_repair: "1.13.1"
+        numpy: "1.26.4"
+        tagged_implicit_source: "0.7.3"
+      scope: >-
+        One predeclared synthetic duplicate-coordinate fixture passed from direct
+        CSR construction to the source-extracted tagged implicit cosine normalizer.
+        All four phases ran in the same single-threaded Linux container. Full
+        RecTools and implicit recommendation pipelines and ranking quality remain
+        unverified.
+      result: >-
+        SciPy 1.13.0 retained five entries versus four in the old CSR with identical
+        dense values. The normalized item-vector L2 norm rose from 1 to 1.290994.
+        SciPy 1.13.1 and rollback restored the old CSR and normalized values.
+        Every phase completed without warnings.
+      upstream_testsuite: not_runnable
+      upstream_testsuite_note: The scoped replay uses the tagged normalizer without the full implicit package and its test dependencies.
+      evidence: results/issue-guided/L7/20261113T0217118841420Z/summary.json
+      reproducer: protocol/reproducers/scipy_sparse_duplicates.ps1
+
+  - id: L7b
+    project: scipy/scipy
+    url: https://docs.scipy.org/doc/scipy-1.11.0/release/1.11.0-notes.html#scipy-sparse-improvements
+    claimed_symptom: >-
+      Release-note changes in scipy.sparse, 1.11 to 1.15: (1.11) sparse / dense now
+      returns sparse; int64 indices no longer downcast to int32; argmin/argmax "now
+      return the correct result when explicit zeros are present". (1.12) DOK rewrite;
+      hstack/vstack preserve sparse type. (1.13) COO 1-D support. (1.14) min/max and
+      argmin/argmax of sparse arrays return 1-D results (min/max still COO);
+      iterating CSR/CSC yields 1-D arrays; .A/.H and getrow/getcol/getnnz removed
+      from sparse arrays. (1.15) sparse arrays fully support 1-D/2-D indexing;
+      may raise on float16; min/max/argmin/argmax gain an `explicit` argument.
+    versions_old: {scipy: "1.11.4"}
+    versions_new: {scipy: "1.15.x"}
+    versions: {dependency: scipy, old: "1.10 to 1.14", new: "1.11 to 1.15"}
+    visibility: unknown
+    mechanism_guess: >-
+      Most items change types or shapes and would crash downstream (as in L1 and
+      L1b). The value-changing item is the 1.11 argmax/argmin fix with explicit
+      zeros: code that picks a sparse row's best item could change silently.
+    evidence_quality: release_note_only
+    status: not_reproducible
+    closure:
+      decided: '2026-11-14'
+      reason: "Every SciPy transition from 1.11.4 to 1.18.1 (S1-S7) produced identical checkpoints in every pipeline that calls SciPy."
+      evidence: []
+    evidence:
+      - https://docs.scipy.org/doc/scipy-1.12.0/release/1.12.0-notes.html
+      - https://docs.scipy.org/doc/scipy-1.13.0/release/1.13.0-notes.html
+      - https://docs.scipy.org/doc/scipy-1.14.0/release/1.14.0-notes.html
+      - https://docs.scipy.org/doc/scipy-1.15.0/release/1.15.0-notes.html
+    notes: >-
+      Answer to pilot lead L7: the 1.12 to 1.15 notes document no default change
+      in sparse arithmetic results; the documented value change is the 1.11
+      argmin/argmax fix and the undocumented one is the 1.13.0 duplicate bug (L7).
+      The "Backwards incompatible changes" sections of 1.12 to 1.15 list nothing in
+      scipy.sparse.
+
+  - id: L8
+    project: numpy/numpy
+    url: https://numpy.org/doc/2.0/numpy_2_0_migration_guide.html#windows-default-integer
+    claimed_symptom: >-
+      Default integers become 64-bit on 64-bit Windows. implicit issue 740 shows a
+      concrete effect: tests failed on Windows with "Buffer dtype mismatch, expected
+      'long' but got 'long long'" under NumPy 2.2.5 (fixed by the maintainer in PR 743).
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: "2.0.0 (reported on 2.2.5)"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.0.0"}
+    visibility: unknown
+    mechanism_guess: dtype-sensitive consumers (Cython buffers, overflow-prone counts) see int64 instead of int32.
+    evidence_quality: release_note_only
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "Windows-only effect. All runs are on Linux by protocol rule."
+    evidence:
+      - https://github.com/benfred/implicit/issues/740
+    notes: >-
+      Windows-only; outside the Linux pilot (project rule 12). The one concrete
+      downstream report is a crash (maintainer-confirmed). A silent variant would
+      need int32 overflow that int64 removes (see L13); not reported.
+
+  - id: L9
+    project: NicolasHug/Surprise
+    url: https://github.com/NicolasHug/Surprise/issues/485
+    claimed_symptom: >-
+      ImportError "numpy.core.multiarray failed to import" when importing Surprise
+      under NumPy 2. The Recommenders Surprise notebook test failed the same way.
+    versions_old: {numpy: "1.x"}
+    versions_new: {numpy: "2.x (reported 2.0.2, 2.2.2, 2.3.4)"}
+    versions:
+      dependency: numpy
+      old_abi_family: "1.x"
+      new_reported: "2.2.2 and 2.3.4"
+      application_report: "scikit-surprise 1.1.4"
+      application_fix_reported: "scikit-surprise 1.1.5"
+    visibility: crash
+    mechanism_guess: Extension compiled against the NumPy 1.x C ABI.
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Source documents an import crash of older Surprise under NumPy 2. Fixed in Surprise 1.1.5, which ran on NumPy 1.26 to 2.5 in this study (P3 N1-N6 identical)."
+      evidence:
+      - protocol/pipelines_p3_p4.md
+    evidence:
+      - https://github.com/recommenders-team/recommenders/issues/2224
+      - https://github.com/NicolasHug/Surprise/pull/499
+      - https://github.com/NicolasHug/Surprise/tree/v1.1.5
+      - https://github.com/PreferredAI/cornac/issues/628
+    notes: >-
+      The Surprise maintainer said 1.1.5 should fix it; PR 499 is titled "Fix numpy
+      2 compatibility? Who knows!", so any numeric change between 1.1.4 and 1.1.5
+      builds is untested upstream. Cornac issue 628 is the same ABI class of crash
+      for another package (fixed in Cornac 2.2.2).
+
+  - id: L10
+    project: lenskit/lkpy
+    url: https://github.com/lenskit/lkpy/pull/1121
+    claimed_symptom: >-
+      PR body: "fixes a data type bug in item KNN + test harnesses with NumPy 2.5 and
+      SciPy 1.18". Commit "knn: fix normalization to keep Float32" adds
+      `.astype(np.float32)` after `rmat / np.maximum(norms, ...)`, and the PR adds an
+      implicit-feedback item-kNN test with expected_ndcg 0.10.
+    versions_old: {numpy: "2.4.6", scipy: "1.17.1"}
+    versions_new: {numpy: "2.5.0", scipy: "1.18.0"}
+    versions:
+      dependencies: {numpy: ["2.4.6", "2.5.0"], scipy: ["1.17.1", "1.18.0"]}
+      application_fix: "lenskit v2026.3.0"
+    visibility: unknown
+    mechanism_guess: >-
+      Sparse-by-dense division started returning float64 instead of float32 with the
+      new NumPy/SciPy pair, changing the similarity matrix dtype. Whether this
+      changed scores or ties, or only failed a type check, is not stated.
+    evidence_quality: maintainer_confirmed
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "LensKit pipeline not built in this study."
+    evidence:
+      - https://github.com/lenskit/lkpy/commit/28fa589d19068387aaae1ecaf2185753921d4c79
+      - https://github.com/lenskit/lkpy/releases/tag/v2026.3.0
+    notes: >-
+      The lock update moves NumPy and SciPy together, so the source does not isolate
+      one dependency. Best "unknown" lead to test for silence: replay LensKit item-kNN
+      before the fix on both sides and compare scores and dtype. Within the Python
+      3.12 window in the pilot plan.
+
+  - id: L11
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/pull/2391
+    claimed_symptom: >-
+      TfidfRecommender.recommend_top_k_items can recommend an item to itself when
+      another item has identical text: the code drops the first entry of a
+      descending argsort assuming it is the item itself, but "numpy.argsort does not
+      guarantee the item's own index comes before a tied duplicate". Reproducer in PR.
+    versions_old: {numpy: "1.26.x (our hypothesis)"}
+    versions_new: {numpy: "2.0.x (our hypothesis)"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.0.0", application: "recommenders <= 1.2.1"}
+    visibility: silent
+    mechanism_guess: >-
+      tfidf_utils.py (tag 1.2.1, line 245) uses np.argsort(cosine_sim, axis=1) with
+      the default unstable kind. NumPy 2.0 documents that the default argsort may
+      order ties differently from 1.26, so whether the self-index or the duplicate
+      wins a tie, and hence whether the contract is violated, may flip across the
+      upgrade.
+    evidence_quality: maintainer_confirmed
+    status: reproduced
+    closure:
+      decided: '2026-11-14'
+      reason: "The upstream contract violation (self-recommendation under tied scores) was reproduced on a fixture under both NumPy 1.26.4 and 2.0.2. No upgrade effect: both versions gave identical outputs."
+      evidence:
+      - protocol/reproducers/recommenders_tfidf_self_item.py
+    notes: >-
+      The defect is confirmed by a fix merged into staging and co-authored by a
+      maintainer. The PR names no NumPy version. The proposed upgrade link and
+      the full released package remain unverified.
+    local_check:
+      outcome: upstream_contract_failure_reproduced
+      dependency_effect_observed: false
+      versions: {numpy_old: "1.26.4", numpy_new: "2.0.2", tagged_recommenders_source: "1.2.1"}
+      scope: >-
+        Source-extracted tagged ranking method with one predeclared synthetic
+        score matrix derived from the upstream duplicate-text example. Both
+        NumPy environments ran in the same Linux container, single-threaded.
+      result: >-
+        Old, new, rollback and reapply all completed without warnings. Every
+        phase returned identical top-two scores and IDs, and item B appeared
+        as its own first recommendation in each phase.
+      upstream_testsuite: not_runnable
+      upstream_testsuite_note: The scoped N1 environments lack the full Recommenders package and its test dependencies.
+      evidence: results/issue-guided/L11/20261113T0213307143150Z/summary.json
+      reproducer: protocol/reproducers/recommenders_tfidf_self_item.ps1
+
+  - id: L12
+    project: lenskit/lkpy
+    url: https://github.com/pytorch/pytorch/issues/127491
+    claimed_symptom: >-
+      PyTorch issue 127491 (filed by the LensKit maintainer): torch.mv on a sparse
+      CSR tensor "nondeterministically and incorrectly produces NaN for some
+      resulting values, but only on macOS ARM64" with PyTorch 2.3.0. LensKit PR 409
+      added `safe_spmv`, falling back to SciPy on ARM64, and used it in item-kNN.
+    versions_old: {torch: "not stated"}
+    versions_new: {torch: "2.3.0"}
+    versions: {dependency: torch, reported: "2.3.0", fix_pr: "pytorch#127642"}
+    visibility: silent
+    mechanism_guess: >-
+      Platform-specific kernel bug in CSR sparse-matrix-vector product
+      (aarch64); NaN item-kNN scores would drop or reorder items.
+    evidence_quality: maintainer_confirmed
+    status: not_tested
+    closure:
+      decided: '2026-11-14'
+      reason: "macOS ARM64 only; the study runs on Linux x86-64. The P7 pipeline does not use sparse torch.mv."
+      evidence:
+      - protocol/pipelines_p7_torch.md
+    evidence:
+      - https://github.com/lenskit/lkpy/pull/409
+      - https://github.com/mdekstrand/torch-spmv-bug-repro
+    notes: >-
+      Found by LensKit's Hypothesis tests, so it was not silent to the project's
+      test suite. A PyTorch collaborator posted fix PR 127642, which closed together
+      with the issue on 2024-06-03 (PyTorch lands PRs by bot; the first release with
+      the fix is not verified). Whether earlier PyTorch versions were affected is
+      not stated. macOS ARM64 only, so it cannot run in the Linux pilot container.
+
+  - id: L13
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/pull/2420
+    claimed_symptom: >-
+      Open PR: "Integer co-occurrence counts overflow in denominator arithmetic for
+      cosine similarity, Jaccard similarity and lift. Valid nonnegative counts can
+      consequently produce incorrect values or NaNs." 32 regression cases (uint8,
+      int32, int64, dense and CSR) gave 14 failures on staging.
+    versions_old: {numpy: "not stated (validated on 1.26.4)"}
+    versions_new: {numpy: "not stated"}
+    versions: {dependency: numpy, validated_on: "1.26.4 with scipy 1.13.1"}
+    visibility: silent
+    mechanism_guess: >-
+      Integer overflow in SAR similarity normalisation. Our hypothesis for an upgrade
+      link: whether overflow happens depends on the count dtype, which NumPy 2 changes
+      via NEP 50 scalar promotion and the Windows default integer (L4, L8).
+    evidence_quality: user_report
+    status: not_reproducible
+    closure:
+      decided: '2026-11-14'
+      reason: "Not triggered in this configuration: the SAR adapter passes float64 ratings, and MovieLens 1M co-occurrence counts are far below integer overflow. A larger dataset or integer ratings would be needed to test it."
+      evidence:
+      - protocol/pipelines_p3_p4.md
+    notes: >-
+      Unreviewed open PR from an outside contributor; the upgrade link is ours, not
+      the source's. Typical SAR co-occurrence counts may never reach overflow, so
+      applicability is doubtful. Keep as a mechanism lead only.
+
+  - id: L14
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/issues/2326
+    claimed_symptom: >-
+      LightGCN raises AttributeError "np.mat was removed in the NumPy 2.0 release"
+      at model creation.
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: ">=2.0"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.0.0"}
+    visibility: crash
+    mechanism_guess: Removed np.mat alias.
+    evidence_quality: user_report
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "User-reported crash (removed np.mat) in Recommenders LightGCN. Not exercised by the study's pipelines."
+    evidence:
+      - https://github.com/recommenders-team/recommenders/pull/2327
+    notes: Issue open; PR 2327 closed. LightGCN has since moved to PyTorch (PR 2315).
+
+  - id: L15
+    project: recommenders-team/recommenders
+    url: https://github.com/recommenders-team/recommenders/issues/2353
+    claimed_symptom: >-
+      TF-IDF get_top_k_recommendations raises TypeError under NumPy 2.4.6 because
+      np.where(...)[0] (an array) is converted to a scalar.
+    versions_old: {numpy: "<1.25 (deprecation introduced in 1.25)"}
+    versions_new: {numpy: "2.4.6"}
+    versions: {dependency: numpy, deprecated: "1.25", reported: "2.4.6"}
+    visibility: crash
+    mechanism_guess: Conversion of ndim>0 arrays to scalars, deprecated in 1.25, now an error.
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Maintainer-confirmed crash in Recommenders TF-IDF under NumPy 2.4.6. Not exercised by the study's pipelines."
+    evidence:
+      - https://github.com/recommenders-team/recommenders/pull/2354
+    notes: >-
+      Fix PR 2354 merged. Between 1.25 and the version that made it an error this
+      path emitted a DeprecationWarning only; the first erroring NumPy version is
+      not verified here.
+
+  - id: L16
+    project: PreferredAI/cornac
+    url: https://github.com/PreferredAI/cornac/issues/644
+    claimed_symptom: >-
+      With NumPy 2.1.1, running an example experiment fails because np.Inf is not
+      supported in Recommender.reset_info; PR 627 pinned numpy<2 and scipy<=1.13.1
+      after pytest failures on np.Inf.
+    versions_old: {numpy: "1.26.x"}
+    versions_new: {numpy: "2.1.1"}
+    versions: {dependency: numpy, old: "1.26.x", new: "2.1.1", application_fix: "cornac PR 664 (NumPy 2 upgrade)"}
+    visibility: crash
+    mechanism_guess: Removed NumPy alias np.Inf.
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Maintainer-confirmed crash (removed np.Inf) in Cornac before its NumPy 2 port. Cornac 3.1.0 ran on NumPy 2.0 to 2.5 in this study (P6 identical or equivalent)."
+      evidence:
+      - protocol/pipelines_p6_cornac.md
+    evidence:
+      - https://github.com/PreferredAI/cornac/pull/627
+      - https://github.com/PreferredAI/cornac/pull/664
+    notes: Cornac now requires numpy>2.0.0, so replay needs a pre-664 release.
+  - id: L17
+    project: RUCAIBox/RecBole
+    url: https://github.com/RUCAIBox/RecBole/pull/2155
+    claimed_symptom: >-
+      Running run_recbole.py on RecBole 1.2.1 fails with "AttributeError: module
+      'numpy' has no attribute 'bool8'" during trainer.evaluate; the open PR
+      replaces the removed alias.
+    versions_old: {numpy: "1.x"}
+    versions_new: {numpy: "2.x"}
+    visibility: crash
+    mechanism_guess: Removed NumPy alias np.bool8 (same family as np.NaN in L-SAR and np.Inf in L16).
+    evidence_quality: user_report
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "User-reported crash (removed np.bool8) in RecBole 1.2.1. Not exercised: RecBole is not run."
+      evidence:
+      - protocol/pipelines_p7_torch.md
+    notes: Found in the 13 November rerun of rate-limited searches. PR still open.
+  - id: L18
+    project: RUCAIBox/RecBole
+    url: https://github.com/RUCAIBox/RecBole/issues/2216
+    claimed_symptom: >-
+      Installing RecBole with pyarrow or scikit-learn on Python 3.12 gives
+      "ImportError: numpy.core.multiarray failed to import" after NumPy 2.0; the
+      reporter asks for a numpy<2 pin.
+    versions_old: {numpy: "1.x"}
+    versions_new: {numpy: "2.0"}
+    visibility: crash
+    mechanism_guess: Binary incompatibility of extensions built against NumPy 1 (NumPy 2.0 ABI break).
+    evidence_quality: user_report
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "User-reported install-time import error under NumPy 2 (binary incompatibility). Not exercised: RecBole is not run."
+    notes: Closed by the reporter as filed in the wrong place. Install-time failure, not a ranking effect.
+  - id: L19
+    project: PreferredAI/cornac
+    url: https://github.com/PreferredAI/cornac/issues/670
+    claimed_symptom: >-
+      The HypAR model's requirement gensim==4.2.0 is incompatible with NumPy 2;
+      maintainers state the change is reflected in Cornac >= 2.3.4.
+    versions_old: {numpy: "1.x"}
+    versions_new: {numpy: "2.x"}
+    visibility: crash
+    mechanism_guess: Transitive dependency (gensim) incompatible with NumPy 2.
+    evidence_quality: maintainer_confirmed
+    status: visible_failure
+    closure:
+      decided: '2026-11-14'
+      reason: "Maintainer-confirmed dependency conflict (gensim) for Cornac HypAR under NumPy 2. Not exercised by the study's pipelines."
+    notes: Dependency-resolution or install failure; no ranking symptom reported.
+  - id: L20
+    project: NicolasHug/Surprise
+    url: https://github.com/NicolasHug/Surprise/pull/486
+    claimed_symptom: >-
+      PR adds an upper bound on NumPy until the package is ready for NumPy 2,
+      to resolve issue 485.
+    versions_old: {numpy: "1.x"}
+    versions_new: {numpy: "2.x"}
+    visibility: unknown
+    mechanism_guess: Pin only; no downstream symptom stated in the PR.
+    evidence_quality: user_report
+    status: not_reproducible
+    closure:
+      decided: '2026-11-14'
+      reason: "The pinned incompatibility no longer applies: Surprise 1.1.5 ran on NumPy 1.26 to 2.5 in this study."
+      evidence:
+      - protocol/pipelines_p3_p4.md
+    notes: >-
+      Related to the existing issue-485 lead. Surprise 1.1.5 (May 2026) imports and
+      runs on NumPy 1.26 to 2.2 in this pilot (P3 N1-N3 identical).

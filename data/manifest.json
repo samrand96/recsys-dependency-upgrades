@@ -1,0 +1,111 @@
+{
+  "format_version": 1,
+  "source": {
+    "url": "https://files.grouplens.org/datasets/movielens/ml-1m.zip",
+    "sha256": "a6898adb50b9ca05aa231689da44c217cb524e7ebd39d264c56e2832f2c54e20",
+    "publisher_md5": "c4d9eecfca2ab87c1945afe126590906"
+  },
+  "duplicate_user_item_interactions_removed": 0,
+  "global_split_warm_relevant_test_user_ceiling_without_validation_gap": 1166,
+  "target_minimum_warm_relevant_test_users": 1500,
+  "split_attempts": [
+    {
+      "target_percentages": [
+        80,
+        10,
+        10
+      ],
+      "validation_start_unix": 975768738,
+      "test_start_unix": 978133414,
+      "interactions_at_validation_start": 4,
+      "interactions_at_test_start": 1,
+      "warm_relevant_test_users": 992
+    },
+    {
+      "target_percentages": [
+        70,
+        10,
+        20
+      ],
+      "validation_start_unix": 974862386,
+      "test_start_unix": 975768738,
+      "interactions_at_validation_start": 4,
+      "interactions_at_test_start": 4,
+      "warm_relevant_test_users": 956
+    },
+    {
+      "target_percentages": [
+        76,
+        10,
+        14
+      ],
+      "validation_start_unix": 975351119,
+      "test_start_unix": 976661178,
+      "interactions_at_validation_start": 4,
+      "interactions_at_test_start": 1,
+      "warm_relevant_test_users": 1007
+    }
+  ],
+  "selected_split": {
+    "target_percentages": [
+      76,
+      10,
+      14
+    ],
+    "validation_start_unix": 975351119,
+    "test_start_unix": 976661178,
+    "interactions_at_validation_start": 4,
+    "interactions_at_test_start": 1,
+    "warm_relevant_test_users": 1007
+  },
+  "splits": {
+    "train": {
+      "interactions": 760157,
+      "warm_interactions": 760157,
+      "warm_users": 5186,
+      "cold_user_interactions": 0,
+      "cold_item_interactions": 0,
+      "cold_users": 0,
+      "cold_items": 0,
+      "excluded_relevant_interactions": 0,
+      "warm_relevant_users": 5181
+    },
+    "validation": {
+      "interactions": 100022,
+      "warm_interactions": 24570,
+      "warm_users": 430,
+      "cold_user_interactions": 75445,
+      "cold_item_interactions": 19,
+      "cold_users": 584,
+      "cold_items": 18,
+      "excluded_relevant_interactions": 43993,
+      "warm_relevant_users": 397
+    },
+    "test": {
+      "interactions": 140030,
+      "warm_interactions": 83036,
+      "warm_users": 1024,
+      "cold_user_interactions": 56905,
+      "cold_item_interactions": 106,
+      "cold_users": 426,
+      "cold_items": 39,
+      "excluded_relevant_interactions": 32878,
+      "warm_relevant_users": 1007
+    }
+  },
+  "training_users": 5186,
+  "training_items": 3655,
+  "activity_count_cutoffs_inclusive": [
+    51,
+    140
+  ],
+  "test_users_by_activity": {
+    "low": 223,
+    "medium": 277,
+    "high": 507
+  },
+  "prepared": {
+    "filename": "ml1m.npz",
+    "sha256": "c170bb57c02e2b9def2a8bb20bbb989b2f033235ff11769ef6d7742e463a8196"
+  }
+}

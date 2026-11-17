@@ -1,0 +1,75 @@
+\subsection{Ranking change and quality loss}
+For a fixed pipeline, let $e\in\{A,B\}$ identify the old or upgraded
+environment, $s$ a paired training seed, $u\in U$ an eligible user and $C_u$
+the fixed eligible item set after seen-item exclusion. Let $z^e_{u,s}(i)$ be
+the score of item $i$, and $\pi^e_{u,s}$ the native ranked list. With
+$K_u=\min(K,|C_u|)$, list churn and set overlap are
+\begin{align}
+ \chi_K &= \frac{1}{S|U|}\sum_{s=1}^{S}\sum_{u\in U}
+  \mathbf{1}\!\left\{\pi^A_{u,s}[1{:}K_u]\ne
+                         \pi^B_{u,s}[1{:}K_u]\right\}, \label{eq:churn}\\
+ O_K &= \frac{1}{S|U|}\sum_{s=1}^{S}\sum_{u\in U}
+  \frac{|\operatorname{set}(\pi^A_{u,s}[1{:}K_u])\cap
+          \operatorname{set}(\pi^B_{u,s}[1{:}K_u])|}{K_u}.
+  \label{eq:overlap}
+\end{align}
+All evaluated users have eligible relevance and hence $K_u>0$. A change in
+order can make $\chi_K$ positive while $O_K=1$. Neither statistic uses relevance
+labels. Checkpoint change is broader still: a fitted model can differ while
+both native top-10 lists and quality remain identical.
+
+Let $R_u\subseteq C_u$ contain the eligible relevant items (rating at least
+four). The primary per-user quality value is binary NDCG at $K=10$:
+\begin{equation}
+ q^e(u,s)=
+ \frac{\displaystyle\sum_{r=1}^{K_u}
+    \frac{\mathbf{1}\{\pi^e_{u,s}(r)\in R_u\}}{\log_2(r+1)}}
+ {\displaystyle\sum_{r=1}^{\min(K,|R_u|)}\frac{1}{\log_2(r+1)}}.
+ \label{eq:ndcg}
+\end{equation}
+The denominator is nonzero by user eligibility. Paired losses, seed means and
+the reported mean are
+\begin{equation}
+ d_{u,s}=q^A(u,s)-q^B(u,s),\qquad
+ \bar d_s=\frac{1}{|U|}\sum_{u\in U}d_{u,s},\qquad
+ \widehat L=\frac{1}{S}\sum_{s=1}^{S}\bar d_s.
+ \label{eq:loss}
+\end{equation}
+Positive $\widehat L$ means lower offline quality after the upgrade, not
+necessarily a material regression. These are within-case estimands; users and
+seeds are not treated as independent upgrade cases.
+
+For deterministic inference ($S=1$), the interval is a paired-user percentile
+bootstrap. For retraining ($S=5$), the primary interval is
+\begin{equation}
+ I=[\ell,h]=\widehat L\ \pm\
+ t_{S-1,\,1-\alpha/2}\frac{\widehat\sigma_d}{\sqrt S},\qquad
+ \widehat\sigma_d^2=\frac{1}{S-1}\sum_{s=1}^{S}(\bar d_s-\widehat L)^2,
+ \quad\alpha=0.05.
+ \label{eq:interval}
+\end{equation}
+For each predeclared activity group, restrict the user average to that group
+and use $\alpha=0.05/3$. If $V$ records a contract violation, the implemented
+decision rule for completed comparisons is
+\begin{equation}
+ D_\delta(I,V)=
+ \begin{cases}
+  \text{contract failure}, & V=1,\\
+  \text{harmful}, & V=0\text{ and }\ell>\delta,\\
+  \text{improved}, & V=0\text{ and }h<-\delta,\\
+  \text{equivalent}, & V=0\text{ and }-\delta\le\ell\le h\le\delta,\\
+  \text{inconclusive}, & \text{otherwise}.
+ \end{cases}
+ \label{eq:verdict}
+\end{equation}
+Installation failures, runtime failures and inapplicability remain outside
+this quality decision. Equivalence is specific to the metric, population,
+mode and tolerance; it is not an assertion of equal predictions.
+
+\subsection{Research-question mapping}
+RQ1 counts case outcomes separately by collection and development split.
+RQ2 combines Equations~\eqref{eq:churn}--\eqref{eq:verdict} with the earliest
+changed checkpoint and controlled interventions. RQ3 compares recorded
+detector alarms with full-population reference labels in a separate synthetic
+collection; it cannot estimate recall on real harmful upgrades when none are
+observed.
